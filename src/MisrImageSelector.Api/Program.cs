@@ -42,12 +42,12 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+app.UseCors();
+
 app.UseAuthentication();
 app.UseAuthorization();
 
 app.UseHttpsRedirection();
-
-app.UseCors();
 
 app.MapPost("api/login", async context =>
 {
