@@ -4,13 +4,17 @@ import { Observable } from 'rxjs';
 import { Constants } from '../consts/constants';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class UserService {
   private readonly _httpClient = inject(HttpClient);
-  constructor() { }
+  constructor() {}
 
   public authenticate(): Observable<void> {
-    return this._httpClient.post<void>(Constants.apiUrl + '/api/login', {});
+    return this._httpClient.post<void>(
+      Constants.apiUrl + '/api/login',
+      {},
+      { withCredentials: true }
+    );
   }
 }
