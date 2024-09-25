@@ -1,0 +1,57 @@
+.page-container {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+
+    .images-container {
+        display: flex;
+        padding: 20px;
+        height: 65vh;
+
+        gap: 40px;
+
+        .image-view {
+            height: 100%;
+        }
+    }
+
+    .form-container {
+        padding: 30px;
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+        align-items: center;
+
+        .slider {
+            width: 100%;
+        }
+
+        .vote-button {
+            width: 100px;
+            height: 40px;
+            background-color: #04bd7e;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+
+            &:hover {
+                background-color: #03a16b;
+            }
+
+            &:disabled {
+                background-color: #7bdebc;
+                cursor: not-allowed;
+            }
+        }
+    }
+}
+
+.game-over-page-container {
+    display: flex;
+    width: 100%;
+    height: 90vh;
+    justify-content: center;
+    align-items: center;
+}

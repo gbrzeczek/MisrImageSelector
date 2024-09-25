@@ -1,0 +1,20 @@
+<div class="image-view">
+  <img
+    src="{{ src }}"
+    class="image-container"
+    #image
+    (mousemove)="onMouseMove($event)"
+    (mouseleave)="onMouseLeave()"
+  />
+  @if (isZoomed) {
+  <div
+    class="zoom-window"
+    [style.backgroundImage]="'url(' + src + ')'"
+    [style.width.px]="zoomWidth"
+    [style.height.px]="zoomHeight"
+    [style.top.px]="zoomTop"
+    [style.left.px]="zoomLeft"
+    [style.backgroundPosition]="backgroundPosition"
+  ></div>
+  }
+</div>
