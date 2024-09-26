@@ -3,7 +3,6 @@ import { RouterOutlet } from '@angular/router';
 import { ImageViewComponent } from './image-view/image-view.component';
 import { SliderComponent } from './slider/slider.component';
 import { Observable, Subject } from 'rxjs';
-import { UserService } from './services/user.service';
 import { HttpClient } from '@angular/common/http';
 import { Constants } from './consts/constants';
 import { AlreadyVotedService } from './services/already-voted.service';
@@ -18,7 +17,6 @@ import { AlreadyVotedService } from './services/already-voted.service';
 export class AppComponent {
   private readonly _httpClient = inject(HttpClient);
   private readonly _alreadyVotedService = inject(AlreadyVotedService);
-  private readonly _userService = inject(UserService);
 
   title = 'misr-image-selector-ui';
   backgroundPosition$: Subject<string> = new Subject<string>();
@@ -35,16 +33,6 @@ export class AppComponent {
     this.setupNextImage();
 
     this.resetSlider$ = this._resetSlider$.asObservable();
-
-    this._areControlsDisabled = true;
-    this._userService.authenticate().subscribe({
-      next: () => {
-        this._areControlsDisabled = false;
-      },
-      error: (err) => {
-        console.error(err);
-      },
-    });
   }
 
   public get leftImageSrc(): string {

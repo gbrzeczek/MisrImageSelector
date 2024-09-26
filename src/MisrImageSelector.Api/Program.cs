@@ -1,16 +1,36 @@
+using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.Cookies;
+using System.Text;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using MisrImageSelector.Api.Commands;
 using MisrImageSelector.Api.Persistence;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Configuration.AddEnvironmentVariables();
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddAuthentication().AddCookie();
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+        options.TokenValidationParameters = new TokenValidationParameters()
+        {
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidateLifetime = true,
+            ValidateIssuerSigningKey = true,
+            ValidIssuer = builder.Configuration.GetValue<string>("JwtSettings:Issuer")!,
+            ValidAudience = builder.Configuration.GetValue<string>("JwtSettings:Audience")!,
+            IssuerSigningKey =
+                new SymmetricSecurityKey(
+                    Encoding.UTF8.GetBytes(builder.Configuration.GetValue<string>("JwtSettings:SecretKey")!))
+        };
+    });
+
 builder.Services.AddAuthorization();
 
 builder.Services.AddDbContext<ApplicationContext>(options =>
@@ -49,31 +69,29 @@ app.UseAuthorization();
 
 app.UseHttpsRedirection();
 
-app.MapPost("api/login", async context =>
+app.MapPost("api/login", (IConfiguration configuration) =>
 {
-    var isUserAuthenticated = context.User.Identity?.IsAuthenticated ?? false;
+    var jwtSettings = configuration.GetSection("JwtSettings");
+    var secretKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings["SecretKey"]!));
+    var signingCredentials = new SigningCredentials(secretKey, SecurityAlgorithms.HmacSha256);
     
-    if (isUserAuthenticated)
+    var claims = new[]
     {
-        context.Response.StatusCode = 200;
-        return;
-    }
-    
-    var claims = new List<Claim>
-    {
-        new(ClaimTypes.NameIdentifier, Guid.NewGuid().ToString())
+        new Claim(ClaimTypes.NameIdentifier, Guid.NewGuid().ToString())
     };
-
-    var identity = new ClaimsIdentity(claims, "cookie");
-    var principal = new ClaimsPrincipal(identity);
     
-    var properties = new AuthenticationProperties
-    {
-        IsPersistent = true,
-        ExpiresUtc = DateTimeOffset.MaxValue
-    };
-
-    await context.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal, properties);
+    var token = new JwtSecurityToken(
+        issuer: jwtSettings["Issuer"],
+        audience: jwtSettings["Audience"],
+        claims: claims,
+        expires: DateTime.Now.AddDays(365),
+        signingCredentials: signingCredentials
+    );
+    
+    var tokenHandler = new JwtSecurityTokenHandler();
+    var encodedToken = tokenHandler.WriteToken(token);
+    
+    return Results.Ok(new { token = encodedToken });
 });
 
 app.MapPost("api/vote", async (ApplicationContext db, HttpContext context, VoteCommand command) =>
