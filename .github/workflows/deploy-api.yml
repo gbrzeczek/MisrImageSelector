@@ -22,6 +22,15 @@ jobs:
     - name: Publish
       run: dotnet publish ./src/MisrImageSelector.Api/MisrImageSelector.Api.csproj -c Release -o ./publish
 
+    - name: Copy files via SCP
+      uses: appleboy/scp-action@master
+      with:
+        host: ${{ secrets.HOST }}
+        username: ${{ secrets.USERNAME }}
+        key: ${{ secrets.SSH_PRIVATE_KEY }}
+        source: "./publish/*"
+        target: "/tmp/image-selector-api"
+        
     - name: Deploy to Oracle Cloud
       uses: appleboy/ssh-action@master
       with:
@@ -30,4 +39,5 @@ jobs:
         key: ${{ secrets.SSH_PRIVATE_KEY }}
         script: |
           rm -rf /var/www/image-selector-api/*
-          cp -r ${{ github.workspace }}/publish/* /var/www/image-selector-api/
+          cp -r /tmp/image-selector-api/* /var/www/image-selector-api/
+          rm -rf /tmp/image-selector-api
