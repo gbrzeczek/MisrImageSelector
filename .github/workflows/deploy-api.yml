@@ -28,7 +28,7 @@ jobs:
         host: ${{ secrets.HOST }}
         username: ${{ secrets.USERNAME }}
         key: ${{ secrets.SSH_PRIVATE_KEY }}
-        source: "./publish/*"
+        source: "./publish"
         target: "/tmp/image-selector-api"
         
     - name: Deploy to Oracle Cloud
@@ -40,8 +40,8 @@ jobs:
         script: |
           sudo systemctl stop image-selector-api
           rm -rf /var/www/image-selector-api/*
-          sudo cp -r /tmp/image-selector-api/* /var/www/image-selector-api/
-          rm -rf /tmp/image-selector-api
+          cp -r /tmp/image-selector-api/publish/* /var/www/image-selector-api/
+          # rm -rf /tmp/image-selector-api
           sudo chown -R www-data:www-data /var/www/image-selector-api
           sudo systemctl start image-selector-api
 
