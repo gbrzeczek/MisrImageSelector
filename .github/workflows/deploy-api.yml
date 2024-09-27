@@ -39,9 +39,9 @@ jobs:
         key: ${{ secrets.SSH_PRIVATE_KEY }}
         script: |
           sudo systemctl stop image-selector-api
-          rm -rf /var/www/image-selector-api/*
-          cp -r /tmp/image-selector-api/publish/* /var/www/image-selector-api/
-          # rm -rf /tmp/image-selector-api
+          sudo rm -rf /var/www/image-selector-api/*
+          sudo cp -r /tmp/image-selector-api/publish/* /var/www/image-selector-api/
+          sudo rm -rf /tmp/image-selector-api
           sudo chown -R www-data:www-data /var/www/image-selector-api
           sudo systemctl start image-selector-api
 
