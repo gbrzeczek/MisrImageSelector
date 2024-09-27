@@ -1,0 +1,33 @@
+name: Deploy API to Oracle Cloud
+
+on:
+  push:
+    branches:
+      - master
+    paths:
+      - 'src/MisrImageSelector.Api/**'
+      - '.github/workflows/deploy-api.yml'
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    
+    - name: Setup .NET Core
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: '8.0.x'
+        
+    - name: Publish
+      run: dotnet publish -c Release -o ./publish
+
+    - name: Deploy to Oracle Cloud
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ secrets.HOST }}
+        username: ${{ secrets.USERNAME }}
+        key: ${{ secrets.SSH_PRIVATE_KEY }}
+        script: |
+          rm -rf /var/www/image-selector-api/*
+          cp -r ${{ github.workspace }}/publish/* /var/www/image-selector-api/

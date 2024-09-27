@@ -125,4 +125,10 @@ app.MapPost("api/vote", async (ApplicationContext db, HttpContext context, VoteC
     context.Response.StatusCode = 201;
 }).RequireAuthorization();
 
+app.MapGet("api/vote", async (ApplicationContext db) =>
+{
+    var votes = await db.Votes.ToListAsync();
+    return Results.Ok(votes);
+});
+
 app.Run();
