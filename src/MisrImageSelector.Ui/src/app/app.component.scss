@@ -48,10 +48,25 @@
     }
 }
 
-.game-over-page-container {
+.text-page-container {
     display: flex;
     width: 100%;
     height: 90vh;
     justify-content: center;
     align-items: center;
+
+    .loading-text {
+      display: flex;
+      align-items: center;
+
+      .static-text {
+        margin-right: 0.25em;
+      }
+
+      .loading-dots {
+        width: 1.5em;
+        display: inline-block;
+        text-align: left;
+      }
+    }
 }

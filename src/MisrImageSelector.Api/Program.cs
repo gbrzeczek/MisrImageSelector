@@ -125,6 +125,22 @@ app.MapPost("api/vote", async (ApplicationContext db, HttpContext context, VoteC
     context.Response.StatusCode = 201;
 }).RequireAuthorization();
 
+app.MapGet("api/vote/current-user/images", async (ApplicationContext db, HttpContext context) =>
+{
+    var session = context.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+    
+    if (session is null)
+    {
+        return Results.Unauthorized();
+    }
+    
+    var votedImages = await db.Votes.Where(vote => vote.SessionId == session)
+        .Select(vote => vote.ImageId)
+        .ToListAsync();
+    
+    return Results.Ok(votedImages);
+}).RequireAuthorization();
+
 app.MapGet("api/vote", async (ApplicationContext db) =>
 {
     var votes = await db.Votes.ToListAsync();

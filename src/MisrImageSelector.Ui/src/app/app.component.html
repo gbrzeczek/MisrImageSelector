@@ -1,21 +1,33 @@
 <router-outlet />
-@if (currentImageIndex != null)
+@if (isLoading)
 {
-<div class="page-container">
-  <div class="images-container">
-    <app-image-view [src]="leftImageSrc" class="image-view" [backgroundPosition$]="backgroundPosition$" [mouseOff$]="mouseOff$"></app-image-view>
-    <app-image-view [src]="centerImageSrc" class="image-view" [backgroundPosition$]="backgroundPosition$" [mouseOff$]="mouseOff$"></app-image-view>
-    <app-image-view [src]="rightImageSrc" class="image-view" [backgroundPosition$]="backgroundPosition$" [mouseOff$]="mouseOff$"></app-image-view>
-  </div>
-  <div class="form-container">
-    <h4>Choose which one of the images on the sides is more similar to the one in the middle</h4>
-    <app-slider [reset$]="resetSlider$" [disabled]="areControlsDisabled" class="slider" (valueChange)="updateScoreValue($event)"></app-slider>
-    <button (click)="send()" [disabled]="areControlsDisabled" class="vote-button">Vote</button>
-  </div>
+<div class="text-page-container">
+  <h4 class="loading-text">
+    <span class="static-text">Loading</span>
+    <span class="loading-dots">{{ loadingDots$ | async }}</span>
+  </h4>
 </div>
 }
-@else {
-<div class="game-over-page-container">
-  <h4>Wow, you've clicked through all the photos - hmu and let me buy you a beer!</h4>
-</div>
+@else
+{
+    @if (currentImageIndex != null)
+    {
+    <div class="page-container">
+      <div class="images-container">
+        <app-image-view [src]="leftImageSrc" class="image-view" [backgroundPosition$]="backgroundPosition$" [mouseOff$]="mouseOff$"></app-image-view>
+        <app-image-view [src]="centerImageSrc" class="image-view" [backgroundPosition$]="backgroundPosition$" [mouseOff$]="mouseOff$"></app-image-view>
+        <app-image-view [src]="rightImageSrc" class="image-view" [backgroundPosition$]="backgroundPosition$" [mouseOff$]="mouseOff$"></app-image-view>
+      </div>
+      <div class="form-container">
+        <h4>Choose which one of the images on the sides is more similar to the one in the middle</h4>
+        <app-slider [reset$]="resetSlider$" [disabled]="areControlsDisabled" class="slider" (valueChange)="updateScoreValue($event)"></app-slider>
+        <button (click)="send()" [disabled]="areControlsDisabled" class="vote-button">Vote</button>
+      </div>
+    </div>
+    }
+    @else {
+    <div class="text-page-container">
+      <h4>Wow, you've clicked through all the photos - hmu and let me buy you a beer!</h4>
+    </div>
+    }
 }
