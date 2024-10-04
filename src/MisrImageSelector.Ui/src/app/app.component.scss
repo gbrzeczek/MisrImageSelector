@@ -5,10 +5,10 @@
 
     .images-container {
         display: flex;
-        padding: 20px;
-        height: 65vh;
+        padding: 10px;
+        min-height: 65vh;
 
-        gap: 40px;
+        gap: 10px;
 
         .image-view {
             height: 100%;
